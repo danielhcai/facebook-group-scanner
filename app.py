@@ -1,3 +1,4 @@
+import csv
 import time
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -54,20 +55,26 @@ if __name__ == "__main__":
 		feed = driver.find_element_by_xpath("//div[@role='feed']")
 		soup = BeautifulSoup(feed.get_attribute("innerHTML"), 'html.parser')
 
-		# Print posts
+		# Print and save posts
+		csv_file = open("temp.csv", "w", newline="")
+		csv_writer = csv.writer(csv_file, delimiter=",", quotechar="\"", quoting=csv.QUOTE_ALL)
 		posts = soup.children
 		next(posts)
 		for post in posts:
 			text = post.findAll(id=lambda x: x and x.startswith("jsc_c_"))
 			if len(text) >= 3:
-				print("Author:", text[1].find("strong").text)
-				print("Date:", " ".join(text[2].find("span", attrs={'class': None}, recursive=False).find("a").get("aria-label").split()[:2]))
-				print(text[3].get_text(separator="\n", strip=True))
+				author = text[1].find("strong").text
+				date = text[2].find("span", attrs={'class': None}, recursive=False).find("a").get("aria-label")
+				post_body = text[3].get_text(separator="\n", strip=True)
+				print("Author:", author)
+				print("Date:", date)
+				print(post_body)
 				print("")
 
 				# TODO: Scan post for contact info
 
-				# TODO: Save post in accesible format
+				csv_writer.writerow([author, date, post_body])
+		csv_file.close()
 
 		# Close browser
 		driver.close()
