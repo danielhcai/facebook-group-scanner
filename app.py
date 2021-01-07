@@ -1,10 +1,13 @@
 import csv
+import re
 import time
-from selenium import webdriver
+
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.action_chains import ActionChains
 
 NUM_SCROLLS = 5
-SCROLL_PAUSE_TIME = 2
+SCROLL_PAUSE_TIME = 3
 
 if __name__ == "__main__":
 	# Command line args
@@ -33,15 +36,16 @@ if __name__ == "__main__":
 		driver.get(args.group)
 
 		# Sort by recent posts
-		time.sleep(1)
-		driver.find_element_by_xpath("//div[@role='feed']//div[@role='button']").click()
-		time.sleep(1)
-		driver.find_element_by_xpath("//div[@role='menuitemradio'][@aria-checked='false']").click()
+		# time.sleep(1)
+		# driver.find_element_by_xpath("//div[@role='feed']//div[@role='button']").click()
+		# time.sleep(1)
+		# driver.find_element_by_xpath("//div[@role='menuitemradio'][@aria-checked='false']").click()
 		
 		# TODO: Scroll until last posts or scroll until all posts for the day have been obtained
 
+
+		# TODO: Scroll to the element
 		# Scroll to get posts
-		height = driver.execute_script("return document.body.scrollHeight")
 		for i in range(NUM_SCROLLS):
 			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 			time.sleep(SCROLL_PAUSE_TIME)
@@ -50,31 +54,35 @@ if __name__ == "__main__":
 			see_more_divs = driver.find_elements_by_xpath("//div[contains(text(),'See More')][@role='button']")  
 			for div in see_more_divs:
 				div.click()
+				time.sleep(1)
+			
+			# Expand post comments
+			comment_divs = driver.find_elements_by_xpath("//div[@role='button']/span/span[contains(text(),'View ')][contains(text(), ' more comment')]") 
+			for div in comment_divs:
+				div.click()
+				time.sleep(1)
+			
+			# See comment replies
+			reply_divs = driver.find_elements_by_xpath("//div[@role='button']/span/span/div/div[contains(text(),'replied')]")  
+			for div in reply_divs:
+				div.click()
+				time.sleep(1)
+
+			# Click "See More"
+			see_more_divs = driver.find_elements_by_xpath("//div[contains(text(),'See More')][@role='button']")  
+			for div in see_more_divs:
+				div.click()
+				time.sleep(1)
+			
+			# TODO: save posts as browser is scrolling
 
 		# Get posts and convert to beautiful soup
 		feed = driver.find_element_by_xpath("//div[@role='feed']")
 		soup = BeautifulSoup(feed.get_attribute("innerHTML"), 'html.parser')
-
-		# Print and save posts
-		csv_file = open("temp.csv", "w", newline="")
-		csv_writer = csv.writer(csv_file, delimiter=",", quotechar="\"", quoting=csv.QUOTE_ALL)
-		posts = soup.children
-		next(posts)
-		for post in posts:
-			text = post.findAll(id=lambda x: x and x.startswith("jsc_c_"))
-			if len(text) >= 3:
-				author = text[1].find("strong").text
-				date = text[2].find("span", attrs={'class': None}, recursive=False).find("a").get("aria-label")
-				post_body = text[3].get_text(separator="\n", strip=True)
-				print("Author:", author)
-				print("Date:", date)
-				print(post_body)
-				print("")
-
-				# TODO: Scan post for contact info
-
-				csv_writer.writerow([author, date, post_body])
-		csv_file.close()
-
+		text = soup.get_text(separator=" ", strip=True)
+		# re."[(]*([0-9]){3}[-) ]*([0-9]){3}[- ]*([0-9]){4}"
+		#"[a-zA-Z]+[@][a-zA-Z]+[.][a-zA-Z]+"
+		
+		import pdb; pdb.set_trace()
 		# Close browser
 		driver.close()
