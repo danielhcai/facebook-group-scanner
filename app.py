@@ -16,6 +16,7 @@ if __name__ == "__main__":
 	parser.add_argument("-u", "--username", type=str, default="")
 	parser.add_argument("-p", "--password", type=str, default="")
 	parser.add_argument("-g", "--group", type=str, default="")
+	parser.add_argument("-f", "--file", type=str, default="temp")
 	args = parser.parse_args()
 
 	# Check for no username or password
@@ -35,54 +36,21 @@ if __name__ == "__main__":
 		login_button.click()
 		driver.get(args.group)
 
-		# Sort by recent posts
-		# time.sleep(1)
-		# driver.find_element_by_xpath("//div[@role='feed']//div[@role='button']").click()
-		# time.sleep(1)
-		# driver.find_element_by_xpath("//div[@role='menuitemradio'][@aria-checked='false']").click()
-		
-		# TODO: Scroll until last posts or scroll until all posts for the day have been obtained
-
-
-		# TODO: Scroll to the element
-		# Scroll to get posts
-		for i in range(NUM_SCROLLS):
-			driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-			time.sleep(SCROLL_PAUSE_TIME)
-
-			# Click "See More"
-			see_more_divs = driver.find_elements_by_xpath("//div[contains(text(),'See More')][@role='button']")  
-			for div in see_more_divs:
-				div.click()
-				time.sleep(1)
-			
-			# Expand post comments
-			comment_divs = driver.find_elements_by_xpath("//div[@role='button']/span/span[contains(text(),'View ')][contains(text(), ' more comment')]") 
-			for div in comment_divs:
-				div.click()
-				time.sleep(1)
-			
-			# See comment replies
-			reply_divs = driver.find_elements_by_xpath("//div[@role='button']/span/span/div/div[contains(text(),'replied')]")  
-			for div in reply_divs:
-				div.click()
-				time.sleep(1)
-
-			# Click "See More"
-			see_more_divs = driver.find_elements_by_xpath("//div[contains(text(),'See More')][@role='button']")  
-			for div in see_more_divs:
-				div.click()
-				time.sleep(1)
-			
-			# TODO: save posts as browser is scrolling
+		input("Press enter to continue...")
 
 		# Get posts and convert to beautiful soup
-		feed = driver.find_element_by_xpath("//div[@role='feed']")
+		feed = driver.find_element_by_xpath("//html")
 		soup = BeautifulSoup(feed.get_attribute("innerHTML"), 'html.parser')
 		text = soup.get_text(separator=" ", strip=True)
-		# re."[(]*([0-9]){3}[-) ]*([0-9]){3}[- ]*([0-9]){4}"
-		#"[a-zA-Z]+[@][a-zA-Z]+[.][a-zA-Z]+"
-		
-		import pdb; pdb.set_trace()
+
+		# "[(]*([0-9]){3}[-) ]*([0-9]){3}[- ]*([0-9]){4}"
+		emails = re.findall("[a-zA-Z0-9.]+[@][a-zA-Z0-9]+[.][a-zA-Z]+", text)
+		unique_emails = set(emails)
+
+		file = open("emails/" + args.file + ".txt", "w")
+		for email in unique_emails:
+			file.write(email + "\n")
+		file.close()
+
 		# Close browser
 		driver.close()

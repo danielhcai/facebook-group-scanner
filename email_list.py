@@ -1,24 +1,16 @@
-"""
-Create a python object that represents and email list.
+import os
+email_path = "./emails/"
 
-Fucntionality:
-Add
-Add iterable
-Remove
-Convert to text document
-Save
-Open
+if __name__ == "__main__":
+	email_set = set()
 
-Requirements:
-No duplicate emails
-Persistence
-Separate emails and phone numbers
-"""
+	for filename in os.listdir(email_path):
+		file = open(email_path + filename)
+		for email in file:
+			email_set.add(email)
+		file.close()
 
-class contact_list:
-	def __init__():
-		self.emails = set()
-		self.phone_number = set()
-
-	def add_email(email)
-		self.emails.add(email)
+	file = open(email_path + "final_list.txt", "w")
+	for email in email_set:
+		file.write(email)
+	file.close()
