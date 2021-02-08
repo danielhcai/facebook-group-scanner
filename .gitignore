@@ -1,9 +1,6 @@
 # Ignore CSV files
 *.csv
 
-emails/
-temp.txt
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
