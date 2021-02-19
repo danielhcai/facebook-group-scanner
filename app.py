@@ -6,9 +6,6 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 
-NUM_SCROLLS = 5
-SCROLL_PAUSE_TIME = 3
-
 if __name__ == "__main__":
 	# Command line args
 	import argparse
@@ -32,7 +29,7 @@ if __name__ == "__main__":
 		username_input.send_keys(args.username)
 		password_input = driver.find_element_by_id("pass")
 		password_input.send_keys(args.password)
-		login_button = driver.find_element_by_id("u_0_b")
+		login_button = driver.find_element_by_name("login")
 		login_button.click()
 		driver.get(args.group)
 
