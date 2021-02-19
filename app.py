@@ -10,9 +10,6 @@ if __name__ == "__main__":
 	# Command line args
 	import argparse
 	parser = argparse.ArgumentParser()
-	parser.add_argument("-u", "--username", type=str, default="")
-	parser.add_argument("-p", "--password", type=str, default="")
-	parser.add_argument("-g", "--group", type=str, default="")
 	parser.add_argument("-f", "--file", type=str, default="temp")
 	args = parser.parse_args()
 
@@ -47,7 +44,9 @@ if __name__ == "__main__":
 		file = open("emails/" + args.file + ".txt", "w")
 		for email in unique_emails:
 			file.write(email + "\n")
-		file.close()
+			unique_emails.add(email)
 
-		# Close browser
-		driver.close()
+	file.close()
+
+	# Close browser
+	driver.close()

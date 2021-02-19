@@ -5,7 +5,7 @@ if __name__ == "__main__":
 	email_set = set()
 
 	for filename in os.listdir(email_path):
-		file = open(email_path + filename)
+		file = open(email_path + filename, "r")
 		for email in file:
 			email_set.add(email)
 		file.close()
