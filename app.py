@@ -10,6 +10,9 @@ if __name__ == "__main__":
 	# Command line args
 	import argparse
 	parser = argparse.ArgumentParser()
+	parser.add_argument("-u", "--username", type=str, default="")
+	parser.add_argument("-p", "--password", type=str, default="")
+	parser.add_argument("-g", "--group", type=str, default="")
 	parser.add_argument("-f", "--file", type=str, default="temp")
 	args = parser.parse_args()
 
